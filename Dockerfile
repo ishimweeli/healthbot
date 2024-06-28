@@ -1,26 +1,15 @@
-# Use Eclipse Temurin as the base image
-FROM eclipse-temurin:21-jdk-jammy
+# Use an official image as a base
+FROM eclipse-temurin:21-jdk-alpine
 
-# Set the working directory in the container
+# Set the working directory
 WORKDIR /app
 
-# Copy the Maven wrapper files
-COPY mvnw .
-COPY .mvn .mvn
+# Copy the application JAR file and properties file to the container
+COPY target/predictionbot-0.0.1-SNAPSHOT.jar /app/predictionbot-0.0.1-SNAPSHOT.jar
+COPY src/main/resources/application.properties /app/resources/application.properties
 
-# Copy the project files
-COPY pom.xml .
-COPY src src
+# Expose the port the app runs on
+EXPOSE 8080
 
-# Build the application
-RUN ./mvnw package -DskipTests
-
-# The application's jar file will be named similar to 'target/healthbot-0.0.1-SNAPSHOT.jar'
-# Adjust the jar file name if necessary
-ARG JAR_FILE=target/*.jar
-
-# Copy the jar file into the container
-COPY ${JAR_FILE} app.jar
-
-# Run the jar file
-ENTRYPOINT ["java","-jar","/app/app.jar"]
+# Command to run the application
+CMD ["java", "-jar", "predictionbot-0.0.1-SNAPSHOT.jar"]

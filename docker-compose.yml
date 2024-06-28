@@ -15,7 +15,7 @@ services:
       - SPRING_MAIL_PASSWORD=mbfp juhd meml qudv
       - SPRING_MAIL_PROPERTIES_MAIL_SMTP_AUTH=true
       - SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE=true
-      - APP_REGISTRATION_URL=http://localhost:3000/register
+      - APP_REGISTRATION_URL=http:https://hiv-prediction-bot.vercel.app/register
       - LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_SECURITY=DEBUG
       - SPRING_DATASOURCE_URL=jdbc:mysql://sql3.freesqldatabase.com:3306/sql3716607?useSSL=false&serverTimezone=UTC
       - SPRING_DATASOURCE_USERNAME=sql3716607
@@ -31,9 +31,11 @@ services:
       - JWT_SECRET=yourheyisnamedhereOnthiscahrfdsnmmvfhgjgjjgjhjhyiyyjyjjkjkukujyujukjukukujujujujujkukukukukujukukukyhyj5thjtrkrjrkrjrjyjhtknb
       - JWT_EXPIRATION=3600000
       - OPENAPI_DEV_URL=http://localhost:8080
-      - OPENAPI_PROD_URL=https://yourdomain.com
-      - CORS_ALLOWED_ORIGIN=http://localhost:3000
+      - OPENAPI_PROD_URL=https://predictionbot-latest.onrender.com
+      - CORS_ALLOWED_ORIGIN=http://localhost:3000,https://hiv-prediction-bot.vercel.app
       - CORS_ALLOWED_METHODS=GET,POST,PUT,DELETE,OPTIONS
       - CORS_ALLOWED_HEADERS=*
       - CORS_ALLOWED_CREDENTIALS=true
       - CORS_CORS_CONFIGURATION=/**
+    volumes:
+      - ./src/main/resources/application.properties:/app/application.properties
