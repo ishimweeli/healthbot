@@ -30,13 +30,13 @@ public class PredictionService {
             int ageUserHad = user.getAge() - yearsSinceDiagnosis;
             return ageUserHad + SURVIVAL_RATE_WITHOUT_ART;
         }
-        int yearsSinceDiagnosis = LocalDate.now().getYear() - user.getTimeCaughtVirus().getYear();
-        int ageAtDiagnosis = user.getAge() - yearsSinceDiagnosis;
-        int remainingYears = RWANDAN_LIFESPAN - ageAtDiagnosis;
+//        int yearsSinceDiagnosis = LocalDate.now().getYear() - user.getTimeCaughtVirus().getYear();
+//        int ageAtDiagnosis = user.getAge() - yearsSinceDiagnosis;
+        int remainingYears = RWANDAN_LIFESPAN - user.getAge();
         double survivalRate = ART_SURVIVAL_RATE - (yearsDelayed * YEARLY_REDUCTION_RATE);
         int predictedRemainingYears = (int) Math.round(remainingYears * survivalRate);
 
-        return ageAtDiagnosis + predictedRemainingYears;
+        return user.getAge() + predictedRemainingYears;
 
     }
 }
