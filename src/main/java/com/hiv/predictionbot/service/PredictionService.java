@@ -19,10 +19,17 @@ public class PredictionService {
         }
 
         if (!user.isOnArtDrugs()) {
-            return user.getAge() + SURVIVAL_RATE_WITHOUT_ART;
+            int yearsSinceDiagnosis = LocalDate.now().getYear() - user.getTimeCaughtVirus().getYear();
+            int ageUserHad = user.getAge() - yearsSinceDiagnosis;
+            return ageUserHad + SURVIVAL_RATE_WITHOUT_ART;
         }
 
         long yearsDelayed = ChronoUnit.YEARS.between(user.getTimeCaughtVirus(), user.getTimeStartedArt());
+        if (yearsDelayed >5) {
+            int yearsSinceDiagnosis = LocalDate.now().getYear() - user.getTimeCaughtVirus().getYear();
+            int ageUserHad = user.getAge() - yearsSinceDiagnosis;
+            return ageUserHad + SURVIVAL_RATE_WITHOUT_ART;
+        }
         int remainingYears = RWANDAN_LIFESPAN - user.getAge();
         double survivalRate = ART_SURVIVAL_RATE - (yearsDelayed * YEARLY_REDUCTION_RATE);
         int predictedRemainingYears = (int) (remainingYears * survivalRate);
