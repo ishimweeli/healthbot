@@ -24,7 +24,8 @@ public class PredictionService {
             return ageUserHad + SURVIVAL_RATE_WITHOUT_ART;
         }
 
-        long yearsDelayed = ChronoUnit.YEARS.between(user.getTimeCaughtVirus(), user.getTimeStartedArt());
+        long yearBetweenDelayed = ChronoUnit.YEARS.between(user.getTimeCaughtVirus(), user.getTimeStartedArt());
+        long yearsDelayed=yearBetweenDelayed-1;
         if (yearsDelayed >5) {
             int yearsSinceDiagnosis = LocalDate.now().getYear() - user.getTimeCaughtVirus().getYear();
             int ageUserHad = user.getAge() - yearsSinceDiagnosis;
