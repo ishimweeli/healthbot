@@ -37,7 +37,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Qualifier("customUserDetailsService")
     private UserDetailsService userDetailsService;
 
-    private final List<String> excludedUrls = Arrays.asList("/api/auth/login", "/api/auth/register", "/", "/swagger-ui/**", "/v3/api-docs/**");
+    private final List<String> excludedUrls = Arrays.asList("/api/auth/login","/actuator/prometheus", "/api/auth/register","/api/auth/validate-token/**", "/", "/swagger-ui/**", "/v3/api-docs/**","/actuator");
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)

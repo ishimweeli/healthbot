@@ -32,7 +32,7 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())  // New way to disable CSRF
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**", "/", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                        .requestMatchers("/actuator","/actuator/prometheus","/api/auth/**","/api/auth/validate-token/**", "/", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
 //                       .requestMatchers("/admin/**").hasRole("ADMIN")  // Uncommented this line
                         .anyRequest().authenticated()
 

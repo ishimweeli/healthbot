@@ -43,8 +43,22 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> registerUser(@RequestBody User user) {
+    public ResponseEntity<?> registerUser(@RequestBody User user, @RequestParam String token) {
         try {
+            if (!jwtUtil.validateInvitationToken(token)) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid or expired invitation token");
+            }
+
+            String invitedEmail = jwtUtil.getEmailFromInvitationToken(token);
+            if (!invitedEmail.equals(user.getEmail())) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email does not match the invited email");
+            }
+
+            // Check if email already exists
+            if (userRepository.existsByEmail(user.getEmail())) {
+                return ResponseEntity.status(HttpStatus.CONFLICT).body("Email already exists");
+            }
+
             User savedUser = userService.saveUser(user);
             return ResponseEntity.ok("User registered successfully: " + savedUser.getEmail());
         } catch (Exception e) {
@@ -55,14 +69,12 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
         try {
-            // Find the user from your repository
             User user = userRepository.findByEmail(loginRequest.getEmail());
 
             if (user == null) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not found");
             }
 
-            // Check password manually
             if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid password");
             }
@@ -80,6 +92,21 @@ public class AuthController {
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred during authentication");
+        }
+    }
+
+    @GetMapping("/validate-token/{token}")
+    public ResponseEntity<?> validateToken(@PathVariable String token) {
+        System.out.println(token);
+        try {
+            String email = jwtUtil.getEmailFromInvitationToken(token);
+            if (email != null) {
+                return ResponseEntity.ok().body(Map.of("email", email));
+            } else {
+                return ResponseEntity.badRequest().body("Invalid token");
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error validating token");
         }
     }
 }

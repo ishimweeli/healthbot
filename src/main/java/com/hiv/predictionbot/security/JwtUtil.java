@@ -13,13 +13,16 @@ import java.util.Map;
 
 @Service
 public class JwtUtil {
-    private static final Logger logger = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
+    private static final Logger logger = LoggerFactory.getLogger(JwtUtil.class);
 
     @Value("${jwt.secret}")
     private String secret;
 
     @Value("${jwt.expiration}")
     private Long expiration;
+
+    @Value("${jwt.invitation.expiration}")
+    private Long invitationExpiration;
 
     public String generateToken(String email, Role role, String firstName) {
         Map<String, Object> claims = new HashMap<>();
@@ -75,5 +78,45 @@ public class JwtUtil {
             logger.error("JWT claims string is empty: {}", e.getMessage());
         }
         return false;
+    }
+
+    public String generateInvitationToken(String email) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("type", "invitation");
+
+        Date now = new Date();
+        Date expiryDate = new Date(now.getTime() + invitationExpiration);
+
+        return Jwts.builder()
+                .setClaims(claims)
+                .setSubject(email)
+                .setIssuedAt(now)
+                .setExpiration(expiryDate)
+                .signWith(SignatureAlgorithm.HS512, secret)
+                .compact();
+    }
+
+    public boolean validateInvitationToken(String token) {
+        try {
+            Claims claims = Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
+            return "invitation".equals(claims.get("type"));
+        } catch (JwtException | IllegalArgumentException e) {
+            logger.error("Invalid invitation token: {}", e.getMessage());
+            return false;
+        }
+    }
+
+    public String getEmailFromInvitationToken(String token) {
+        try {
+            Claims claims = Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
+            if ("invitation".equals(claims.get("type"))) {
+                String email = claims.getSubject();
+                // Remove any surrounding quotation marks
+                return email.replaceAll("^\"|\"$", "");
+            }
+        } catch (JwtException | IllegalArgumentException e) {
+            logger.error("Invalid invitation token: {}", e.getMessage());
+        }
+        return null;
     }
 }
